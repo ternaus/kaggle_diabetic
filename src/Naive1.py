@@ -16,7 +16,8 @@ import pandas as pd
 # fName = open('../data/train_green.pkl')
 # train = pickle.load(fName)
 # fName.close()
-
+from pylab import *
+import seaborn as sns
 
 
 X = []
@@ -59,9 +60,8 @@ encoder = LabelEncoder()
 y = encoder.fit_transform(train_ids).astype(np.int32)
 
 print 'scaling X'
-X = scaler.fit_transform(X).astype(np.float32)
+X = scaler.fit_transform(np.array(X).astype(np.float64)).astype(np.float32)
 
-print type(X), X.shape
 
 X = X.reshape(X.shape[0], 128, 128)
 
@@ -70,7 +70,7 @@ print len(y)
 params = {
   'update_learning_rate': 0.01,
   'update_momentum': 0.9,
-  'max_epochs':15
+  'max_epochs':100
 }
 
 num_classes = len(set(y))
@@ -87,7 +87,7 @@ net1 = NeuralNet(
     # layer parameters:
     input_shape=(None, 128, 128),  # 128x128 input pixels per batch
     hidden0_num_units=100,  # number of units in hidden layer
-    # hidden1_num_units=50,  # number of units in hidden layer
+    # hidden1_num_units=100,  # number of units in hidden layer
     output_nonlinearity=softmax,  # output layer uses identity function
     output_num_units=num_classes,  # 1 target values
 
@@ -108,3 +108,12 @@ X, y = shuffle(X, y, random_state=random_state)
 
 print 'fitting'
 net1.fit(X, y)
+
+train_loss = np.array([i["train_loss"] for i in net1.train_history_])
+valid_loss = np.array([i["valid_loss"] for i in net1.train_history_])
+
+plot(train_loss, linewidth=3, label='train')
+plot(valid_loss, linewidth=3, label='valid')
+yscale("log")
+savefig('plots/simple.png')
+legend()
