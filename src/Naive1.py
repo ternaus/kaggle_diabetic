@@ -25,8 +25,12 @@ fNames = os.listdir('../data/train')
 
 y = pd.DataFrame()
 y['image'] = fNames
+y['image'] = y['image'].apply(lambda x: x.rstrip('.jpeg'))
 
-y = y.merge(pd.read_csv('../data/trainLabels.csv'))['level'].values
+y = (y
+     .merge(pd.read_csv('../data/trainLabels.csv'))['level']
+     # .values
+     )
 
 
 #we are worinkg with impages with size 128x128 => new shape as for 1d array will be 16384
@@ -35,8 +39,10 @@ y = y.merge(pd.read_csv('../data/trainLabels.csv'))['level'].values
 count = 0
 for fName in fNames:
   img = mpimg.imread(os.path.join("..", "data", "train", fName))[:, :, 0]
-  # img = np.reshape(img, 16384)
+  img = np.reshape(img, 16384)
+
   X.append(img.tolist())
+  # X.append(img)
   if count >= 1000 and count % 1000 == 0:
     print count
   count += 1
@@ -55,6 +61,12 @@ y = encoder.fit_transform(train_ids).astype(np.int32)
 print 'scaling X'
 X = scaler.fit_transform(X).astype(np.float32)
 
+print type(X), X.shape
+
+X = X.reshape(X.shape[0], 128, 128)
+
+print X.shape
+print len(y)
 params = {
   'update_learning_rate': 0.01,
   'update_momentum': 0.9,
