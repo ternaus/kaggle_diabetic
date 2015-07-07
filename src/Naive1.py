@@ -116,4 +116,5 @@ plot(train_loss, linewidth=3, label='train')
 plot(valid_loss, linewidth=3, label='valid')
 yscale("log")
 savefig('plots/simple.png')
+
 legend()
