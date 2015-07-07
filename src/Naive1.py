@@ -50,7 +50,7 @@ train_ids = y
 scaler = StandardScaler(with_mean=False)
 
 encoder = LabelEncoder()
-y = encoder.fit_transform(train_ids.values).astype(np.int32)
+y = encoder.fit_transform(train_ids).astype(np.int32)
 
 print 'scaling X'
 X = scaler.fit_transform(X.astype(np.float64)).astype(np.float32)
@@ -73,7 +73,7 @@ net1 = NeuralNet(
         ('output', layers.DenseLayer),
         ],
     # layer parameters:
-    input_shape=(None, 128, 128),  # 28x28 input pixels per batch
+    input_shape=(None, 128, 128),  # 128x128 input pixels per batch
     hidden0_num_units=100,  # number of units in hidden layer
     # hidden1_num_units=50,  # number of units in hidden layer
     output_nonlinearity=softmax,  # output layer uses identity function
