@@ -53,7 +53,7 @@ encoder = LabelEncoder()
 y = encoder.fit_transform(train_ids).astype(np.int32)
 
 print 'scaling X'
-X = scaler.fit_transform(X.astype(np.float64)).astype(np.float32)
+X = scaler.fit_transform(X).astype(np.float32)
 
 params = {
   'update_learning_rate': 0.01,
