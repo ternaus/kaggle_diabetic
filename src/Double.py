@@ -70,7 +70,7 @@ print len(y)
 params = {
   'update_learning_rate': 0.01,
   'update_momentum': 0.9,
-  'max_epochs':100
+  'max_epochs': 100
 }
 
 num_classes = len(set(y))
@@ -115,6 +115,37 @@ valid_loss = np.array([i["valid_loss"] for i in net1.train_history_])
 plot(train_loss, linewidth=3, label='train')
 plot(valid_loss, linewidth=3, label='valid')
 yscale("log")
-savefig('plots/double.png')
 
 legend()
+
+savefig('plots/double.png')
+
+ind = True
+
+if ind:
+  X_test = []
+
+  fNames = os.listdir('../data/test')
+  count = 0
+
+  for fName in fNames:
+    img = mpimg.imread(os.path.join("..", "data", "test", fName))[:, :, 0]
+    img = np.reshape(img, 16384)
+
+    X_test.append(img.tolist())
+    # X.append(img)
+    if count >= 1000 and count % 1000 == 0:
+      print count
+    count += 1
+
+  print 'scaling test'
+
+  X_test = scaler.transform(np.array(X_test).astype(np.float64)).astype(np.float32)
+  print 'reshaping test'
+  X_test = X_test.reshape(X_test.shape[0], 128, 128)
+
+  print 'creating submission'
+  submission = pd.DataFrame()
+  submission['image'] = submission['image'].apply(lambda x: x.rstrip('.jpeg'))
+  submission['level'] = net1.predict(X_test)
+  submission.to_csv('predictions/double.csv', index=False)
