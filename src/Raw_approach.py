@@ -5,10 +5,6 @@ __author__ = 'Vladimir Iglovikov'
 I do not have that much backgroun with this tricky image processing.
 Naive aproach with just throwing everything in, did not work so well.
 
-My next idea - crop original images using ImageMagic, but
-
-rest of the proccess to do in this script, in python.
-
 Naive approach gave me 0.88 on teh holdout set and 0 ad LB
 
 Let's see if I can get better
@@ -21,7 +17,6 @@ from lasagne import layers
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from sklearn.preprocessing import LabelEncoder
-from sklearn.utils import shuffle
 from lasagne.nonlinearities import softmax
 import matplotlib.image as mpimg
 import os
@@ -33,11 +28,12 @@ import pandas as pd
 from pylab import *
 import seaborn as sns
 
-from PIL import Image, ImageChops
+from PIL import Image
+from sklearn.utils import shuffle
 
 X = []
 
-fNames = os.listdir('../data/train')[:10]
+fNames = os.listdir('../data/train_green_128')
 
 y = pd.DataFrame()
 y['image'] = fNames
@@ -51,31 +47,13 @@ y = (y
 
 shape = (128, 128)
 #we are worinkg with impages with size 128x128 => new shape as for 1d array will be 16384
-'''
-b - blue layer,
-g - green layer,
-r - red layer
-'''
 
 count = 0
 for fName in fNames:
-  # img = mpimg.imread(os.path.join("..", "data", "train", fName))[:, :, 0]
-  # img = np.reshape(img, 16384)
-  img = Image.open(os.path.join("..", "data", "train", fName))
+  img = Image.open(os.path.join("..", "data", "train_green_128", fName))
 
-  #rescale image
+  X.append(np.reshape(np.asarray(img)), 16384)
 
-  red, green, blue = img.split()
-
-  '''
-  May be later I will try resizing wit hantializaing, although not sure that it will be relevant when
-  we make size smaller
-  '''
-  # img = img.resize(size, Image.ANTIALIAS)
-  x = green.resize(size)
-  x = np.reshape(x.asarry(), 16384)
-  X.append(x)
-  # X.append(img)
   if count >= 1000 and count % 1000 == 0:
     print count
   count += 1
@@ -120,8 +98,8 @@ net1 = NeuralNet(
         ],
     # layer parameters:
     input_shape=(None, 128, 128),  # 128x128 input pixels per batch
-    hidden0_num_units=100,  # number of units in hidden layer
-    hidden1_num_units=100,  # number of units in hidden layer
+    hidden0_num_units=500,  # number of units in hidden layer
+    hidden1_num_units=500,  # number of units in hidden layer
     output_nonlinearity=softmax,  # output layer uses identity function
     output_num_units=num_classes,  # 1 target values
 
