@@ -171,8 +171,9 @@ clf = NeuralNet(
 
     # optimization method:
     update=nesterov_momentum,
-    update_learning_rate=params['update_learning_rate'],
-    update_momentum=params['update_momentum'],
+    # update_learning_rate=params['update_learning_rate'],
+
+    update_momentum=theano.shared(float32(0.9)),
     use_label_encoder=True,
     regression=False,  # flag to indicate we're dealing with regression problem
     max_epochs=params['max_epochs'],  # we want to train this many epochs
